@@ -1,0 +1,53 @@
+--In this SQL, I'm querying a Spotify data table within a database ("BIT_DB") to analyze Spotify song and artist data.
+
+--First, I will take an initial preview of the data.
+SELECT *
+FROM Spotifydata;
+
+--#1:Which artist has the highest song popularity in the dataset?
+SELECT artist_name,
+avg(popularity)
+FROM Spotifydata
+GROUP BY artist_name
+ORDER BY avg(popularity) DESC LIMIT 1;
+
+--#2: Which artists have an above average danceability in their songs?
+SELECT artist_name,
+avg(danceability)
+FROM Spotifydata
+GROUP BY artist_name
+HAVING avg(danceability)>(SELECT avg(danceability) FROM Spotifydata)
+ORDER BY avg(danceability) DESC;
+
+--#3:Which songs with a popularity of at least 87 also have a below-average energy rating? Sort by Energy.
+SELECT track_name,
+popularity,
+energy
+FROM Spotifydata
+WHERE popularity>87
+AND energy<(SELECT avg(energy) FROM Spotifydata)
+ORDER BY energy DESC;
+
+--#4: What is each artist's slowest song? Sort by slowest to fastest song.
+SELECT artist_name,
+track_name,
+min(tempo) AS speed
+FROM Spotifydata
+GROUP BY artist_name
+ORDER BY tempo ASC;
+
+--#5: What is the average tempo for tracks grouped by duration? Provide the duration and the corresponding average tempo.
+SELECT ROUND(avg(tempo), 3),
+CASE WHEN duration_ms>240000 THEN 'Long'
+WHEN duration_ms>200000 THEN 'Medium'
+ELSE 'Short'
+END AS Song_Length
+FROM Spotifydata
+GROUP BY Song_Length
+ORDER BY Song_Length DESC;
+
+
+
+
+
+
